@@ -1,0 +1,38 @@
+[config]
+schemaVersion = "0.0.1"
+
+[package]
+namespace = "eviegc"
+name = "SelectForScrap"
+description = "Allows you to pre-select items from your inventory you want to automatically scrap the next time you use a scrapper."
+websiteUrl = "https://github.com/eviegc/SelectForScrap"
+containsNsfwContent = false
+
+[package.dependencies]
+bbepis-BepInExPack = "5.4.2121"
+
+[build]
+icon = "icon.png"
+readme = "README.md"
+outdir = "build"
+
+[[build.copy]]
+source = "CHANGELOG.md"
+target = "CHANGELOG.md"
+
+[[build.copy]]
+source = "SelectForScrap/bin/Release/netstandard2.1/SelectForScrap.dll"
+target = "SelectForScrap.dll"
+
+[[build.copy]]
+source = "SelectForScrap/bin/Release/netstandard2.1/SelectForScrap.pdb"
+target = "SelectForScrap.pdb"
+
+[general]
+repository = "https://thunderstore.io"
+
+[publish]
+communities = [ "riskofrain2" ]
+
+[publish.categories]
+riskofrain2 = [ "mods" ]
