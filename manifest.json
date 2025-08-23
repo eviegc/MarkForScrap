@@ -1,0 +1,9 @@
+{
+    "name": "SelectForScrap",
+    "description": "Allows you to pre-select items from your inventory you want to automatically scrap the next time you use a scrapper.",
+    "version_number": "1.0.0",
+    "website_url": "https://github.com/eviegc/SelectForScrap",
+    "dependencies": [
+        "bbepis-BepInExPack-5.4.2121"
+    ]
+}
