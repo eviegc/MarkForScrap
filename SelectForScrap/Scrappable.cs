@@ -64,7 +64,7 @@ namespace SelectForScrap
 
             ScrapCount += delta;
 
-            Debug.Log($"[SelectForScrap] Scrappable.OnPointerClick() | Item: {idx}, scrapCount: {scrapCount}, ScrapCount: {ScrapCount}, Delta: {delta}");
+            Debug.Log($"[SelectForScrap] Scrappable.OnPointerClick() | Item: {idx}, ScrapCount: {ScrapCount}, Delta: {delta}");
         }
     }
 }
