@@ -2,13 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <LangVersion>preview</LangVersion>
+    <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup>
-    <ModVersion>1.0.0</ModVersion>
-    <PluginsPath>C:\Users\elizabeth\AppData\Roaming\r2modmanPlus-local\RiskOfRain2\profiles\Dev\BepInEx\plugins\eviegc-SelectForScrap</PluginsPath>
+    <BepInExPluginName>SelectForScrap</BepInExPluginName>
+    <BepInExPluginGuid>com.eviegc.SelectForScrap</BepInExPluginGuid>
+    <BepInExPluginVersion>1.0.0</BepInExPluginVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DevProfile>C:\Users\elizabeth\AppData\Roaming\r2modmanPlus-local\RiskOfRain2\profiles\Dev\BepInEx\plugins\eviegc-SelectForScrap</DevProfile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,14 +23,15 @@
 		</PackageReference>
 
 		<PackageReference Include="BepInEx.Core" Version="5.4.*" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.1.0" />
 
 		<PackageReference Include="R2API.Items" Version="1.0.*" />
-
-		<PackageReference Include="Rune580.Mods.RiskOfRain2.RiskOfOptions" Version="2.8.3" />
 
 		<PackageReference Include="UnityEngine.Modules" Version="2021.3.33" IncludeAssets="compile" />
 		<PackageReference Include="RiskOfRain2.GameLibs" Version="1.3.9-r.0" />
 		<PackageReference Include="MMHOOK.RoR2" Version="2025.6.3" NoWarn="NU1701" />
+
+    <PackageReference Include="Rune580.Mods.RiskOfRain2.RiskOfOptions" Version="2.8.3" />
   </ItemGroup>
 
   <Target Name="InstallPlugin" AfterTargets="Build" Condition="'$(Configuration)'=='Debug'">
@@ -33,16 +39,16 @@
 			<_FilesToCopy Include="$(OutputPath)**\SelectForScrap.dll;$(OutputPath)**\SelectForScrap.pdb" />
 		</ItemGroup>
 		
-		<Message Text="Copying @(_FilesToCopy) -&gt; $(PluginsPath)" Importance="high" />
-		<Copy SourceFiles="@(_FilesToCopy)" DestinationFiles="@(_FilesToCopy->'$(PluginsPath)\%(Filename)%(Extension)')" />
+		<Message Text="Copying @(_FilesToCopy) -&gt; $(DevProfile)" Importance="high" />
+		<Copy SourceFiles="@(_FilesToCopy)" DestinationFiles="@(_FilesToCopy->'$(DevProfile)\%(Filename)%(Extension)')" />
 	</Target>
 
-  <Target Name="BuildThunderstorePackage" AfterTargets="PostBuildEvent" Condition="$(Configuration) == 'Release'">
-    <Exec Command="tcli build --config-path $(ProjectDir)../thunderstore.toml --package-version $(ModVersion)" />
+  <Target Name="PackageForThunderstore" AfterTargets="PostBuildEvent" Condition="$(Configuration) == 'Release'">
+    <Exec Command="tcli build --config-path $(ProjectDir)../thunderstore.toml --package-version $(BepInExPluginVersion)" />
   </Target>
 
-  <Target Name="PublishThunderstorePackage">
-    <Exec Command="tcli publish --config-path $(ProjectDir)../thunderstore.toml --file $(ProjectDir)../build/*-$(ModVersion).zip" />
+  <Target Name="PublishToThunderstore">
+    <Exec Command="tcli publish --config-path $(ProjectDir)../thunderstore.toml --file $(ProjectDir)../build/*-$(BepInExPluginVersion).zip" />
   </Target>
 
 </Project>
