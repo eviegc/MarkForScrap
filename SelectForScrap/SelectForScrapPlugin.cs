@@ -20,46 +20,74 @@ public class SelectForScrapPlugin : BaseUnityPlugin
         Debug.Log("[SelectForScrap] SelectForScrapPlugin.Awake()");
         InitConfig();
 
-        On.RoR2.UI.ItemInventoryDisplay.UpdateDisplay += ItemInventoryDisplay_UpdateDisplay;
-        On.RoR2.CharacterMaster.Awake += CharacterMaster_Awake;
+        // Attach our scrap counter to the CharacterMaster's inventory as it wakes up
+        CharacterMaster.onStartGlobal += OnCharacterMasterStart;
+
+        // Make sure we mark the inventory list in the top-bar for later use
+        On.RoR2.UI.HUD.Awake += HUD_Awake;
+
+        // Since we can mark the target inventory, we can check on every ItemIcon creation
+        // whether we're in the top bar, and attach our components if we are.
+        On.RoR2.UI.ItemIcon.Awake += ItemIcon_Awake;
     }
 
     public void OnDestroy()
     {
         Debug.Log("[SelectForScrap] SelectForScrapPlugin.OnDestroy()");
 
-        On.RoR2.UI.ItemInventoryDisplay.UpdateDisplay -= ItemInventoryDisplay_UpdateDisplay;
-        On.RoR2.CharacterMaster.Awake -= CharacterMaster_Awake;
+        On.RoR2.UI.HUD.Awake -= HUD_Awake;
+        On.RoR2.UI.ItemIcon.Awake -= ItemIcon_Awake;
     }
 
-    private void CharacterMaster_Awake(On.RoR2.CharacterMaster.orig_Awake orig, CharacterMaster master)
+    private void OnCharacterMasterStart(CharacterMaster master)
     {
-        Debug.Log("[SelectForScrap] SelectForScrapPlugin.CharacterMaster_Awake()");
+        // Debug.Log("[SelectForScrap] SelectForScrapPlugin.OnCharacterMasterStart()");
 
-        orig(master);
+        if (!Utils.LocalUser.IsLocal(master)) return;
+
+        // Debug.Log("[SelectForScrap] SelectForScrapPlugin.OnCharacterMasterStart() | Got Local Player");
 
         var inv = master.inventory;
-        if (!inv) { Debug.Log("[SelectForScrap] SelectForScrapPlugin.CharacterMaster_Awake() - No Inventory Found"); return; }
+        if (!inv)
+        {
+            // Debug.Log("[SelectForScrap] SelectForScrapPlugin.OnCharacterMasterStart() | No Inventory Found");
+            return;
+        }
 
         if (!inv.gameObject.GetComponent<ScrapCounter>())
         {
+            Debug.Log("[SelectForScrap] SelectForScrapPlugin.OnCharacterMasterStart() | Adding ScrapCounter");
             inv.gameObject.AddComponent<ScrapCounter>();
         }
     }
 
-    private void ItemInventoryDisplay_UpdateDisplay(On.RoR2.UI.ItemInventoryDisplay.orig_UpdateDisplay orig, RoR2.UI.ItemInventoryDisplay self)
+    private void HUD_Awake(On.RoR2.UI.HUD.orig_Awake orig, RoR2.UI.HUD self)
     {
-        Debug.Log("[SelectForScrap] SelectForScrapPlugin.ItemInventoryDisplay_UpdateDisplay()");
+        Debug.Log("[SelectForScrap] SelectForScrapPlugin.HUD_Awake()");
 
         orig(self);
 
-        foreach (var icon in self.itemIcons)
+        var invDisplay = self.itemInventoryDisplay;
+
+        if (!invDisplay.gameObject.GetComponent<MainInventoryMarker>())
         {
-            // TODO Filter by local user?
-            if (!icon || icon.itemIndex == ItemIndex.None) continue;
-            if (!icon.gameObject.GetComponent<Scrappable>())
-                icon.gameObject.AddComponent<Scrappable>();
+            invDisplay.gameObject.AddComponent<MainInventoryMarker>();
         }
+    }
+
+    private void ItemIcon_Awake(On.RoR2.UI.ItemIcon.orig_Awake orig, RoR2.UI.ItemIcon self)
+    {
+        // Debug.Log("[SelectForScrap] SelectForScrapPlugin.ItemIcon_Awake()");
+
+        orig(self);
+
+        if (!self.GetComponentInParent<MainInventoryMarker>()) return;
+
+        Debug.Log("[SelectForScrap] SelectForScrapPlugin.ItemIcon_Awake() | Got ItemIcon the main inventory");
+
+        if (self.GetComponent<Scrappable>()) return;
+
+        self.gameObject.AddComponent<Scrappable>();
     }
 
     private void InitConfig()
@@ -81,4 +109,7 @@ public class SelectForScrapPlugin : BaseUnityPlugin
 
         // Server config
     }
+
+    // Used only so we can find the top-bar inventory later on
+    private sealed class MainInventoryMarker : MonoBehaviour { }
 }

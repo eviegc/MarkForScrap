@@ -9,8 +9,6 @@ namespace SelectForScrap
     public class ScrapCounter : MonoBehaviour
     {
         private Inventory inventory;
-        // TODO still need to clean this wrt what is in the inventory, what if we get 
-        // benthic'ed 
         private Dictionary<ItemIndex, int> scrapCounter = new Dictionary<ItemIndex, int>();
 
         public int this[ItemIndex idx]
@@ -31,32 +29,32 @@ namespace SelectForScrap
             Debug.Log("[SelectForScrap] ScrapCounter.Awake()");
 
             inventory = GetComponent<Inventory>();
-
-            // TODO come back
-            // On.RoR2.Inventory.RemoveItem_ItemIndex_int += Inventory_RemoveItem_ItemIndex_int;
+            inventory.onInventoryChanged += SyncScrapCountWithInventory;
         }
 
-        public static ScrapCounter GetFromLocalBody()
+        public void OnDestroy()
         {
-            var localUser = LocalUserManager.GetFirstLocalUser();
-            var inv = localUser?.cachedMasterController?.master?.inventory;
-            if (!inv) return null;
+            Debug.Log("[SelectForScrap] ScrapCounter.OnDestroy()");
 
-            return inv.gameObject.GetComponent<ScrapCounter>();
+            // Don't think this is strictly necessary, but just in case
+            if (inventory) inventory.onInventoryChanged -= SyncScrapCountWithInventory;
         }
 
-        // private void Inventory_RemoveItem_ItemIndex_int(On.RoR2.Inventory.orig_RemoveItem_ItemIndex_int orig, Inventory self, ItemIndex itemIndex, int count)
-        // {
-        //     Debug.Log("[SelectForScrap] ScrapCounter.Inventory_RemoveItem_ItemIndex_int()");
+        private void SyncScrapCountWithInventory()
+        {
+            Debug.Log("[SelectForScrap] ScrapCounter.SyncScrapCountWithInventory()");
 
-        //     orig(self, itemIndex, count);
-
-        //     if (!self) return;
-
-        //     var scrapCounter = self.gameObject.GetComponent<ScrapCounter>();
-        //     if (!scrapCounter) return;
-
-        //     scrapCounter[itemIndex] -= count;
-        // }
+            List<ItemIndex> tracking = [.. scrapCounter.Keys];
+            foreach (var idx in tracking)
+            {
+                // The Benthic Bloom safeguard. The scrapCount[idx] is only ever updated
+                // via IPointerClickHandler events, so if one of our stacks changes under
+                // us we'd hold on to a scrap count > 0. If we then reacquire that item
+                // it'll have a non-zero scrap count. 
+                // We fix by removing (/zero out) our scrap count for any item we own 0 of.
+                // All other synchronisation (value clamp) happens in the getter.
+                if (inventory.GetItemCount(idx) == 0) scrapCounter.Remove(idx);
+            }
+        }
     }
 }
