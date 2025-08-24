@@ -7,14 +7,14 @@ namespace SelectForScrap
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Scrappable))]
-    public class InventoryItemScrapCount : MonoBehaviour
+    public class ScrapCountUI : MonoBehaviour
     {
         private Scrappable scrappable;
         private HGTextMeshProUGUI scrapCount;
 
         public void Awake()
         {
-            Debug.Log("[SelectForScrap] InventoryItemScrapCount.Awake()");
+            Debug.Log("[SelectForScrap] ScrapCountUI.Awake()");
 
             scrappable = GetComponent<Scrappable>();
 
@@ -37,8 +37,10 @@ namespace SelectForScrap
 
         public void LateUpdate()
         {
-            // Debug.Log("[SelectForScrap] InventoryItemScrapCount.LateUpdate()");
-            scrapCount.text = scrappable.ScrapCount.ToString();
+            // Debug.Log("[SelectForScrap] ScrapCountUI.LateUpdate()");
+
+            var scrapCounter = ScrapCounter.GetFromLocalBody();
+            scrapCount.text = scrapCounter[scrappable.idx].ToString();
         }
     }
 }

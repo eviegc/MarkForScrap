@@ -19,13 +19,32 @@ public class SelectForScrapPlugin : BaseUnityPlugin
     {
         Debug.Log("[SelectForScrap] SelectForScrapPlugin.Awake()");
         InitConfig();
+
         On.RoR2.UI.ItemInventoryDisplay.UpdateDisplay += ItemInventoryDisplay_UpdateDisplay;
+        On.RoR2.CharacterMaster.Awake += CharacterMaster_Awake;
     }
 
     public void OnDestroy()
     {
         Debug.Log("[SelectForScrap] SelectForScrapPlugin.OnDestroy()");
+
         On.RoR2.UI.ItemInventoryDisplay.UpdateDisplay -= ItemInventoryDisplay_UpdateDisplay;
+        On.RoR2.CharacterMaster.Awake -= CharacterMaster_Awake;
+    }
+
+    private void CharacterMaster_Awake(On.RoR2.CharacterMaster.orig_Awake orig, CharacterMaster master)
+    {
+        Debug.Log("[SelectForScrap] SelectForScrapPlugin.CharacterMaster_Awake()");
+
+        orig(master);
+
+        var inv = master.inventory;
+        if (!inv) { Debug.Log("[SelectForScrap] SelectForScrapPlugin.CharacterMaster_Awake() - No Inventory Found"); return; }
+
+        if (!inv.gameObject.GetComponent<ScrapCounter>())
+        {
+            inv.gameObject.AddComponent<ScrapCounter>();
+        }
     }
 
     private void ItemInventoryDisplay_UpdateDisplay(On.RoR2.UI.ItemInventoryDisplay.orig_UpdateDisplay orig, RoR2.UI.ItemInventoryDisplay self)
