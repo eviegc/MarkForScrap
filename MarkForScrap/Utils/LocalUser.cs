@@ -1,6 +1,6 @@
 using RoR2;
 
-namespace SelectForScrap.Utils
+namespace MarkForScrap.Utils
 {
     public static class LocalUser
     {

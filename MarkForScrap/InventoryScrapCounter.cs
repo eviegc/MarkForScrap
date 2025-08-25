@@ -2,7 +2,7 @@ using RoR2;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace SelectForScrap
+namespace MarkForScrap
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(NetworkUser))]
@@ -23,24 +23,24 @@ namespace SelectForScrap
         [ServerCallback]
         public void Start()
         {
-            Debug.Log("[SelectForScrap] ScrapCounter.Start()");
+            Debug.Log("[MarkForScrap] ScrapCounter.Start()");
             if (isServer)
             {
                 markedForScrap.Clear();
                 for (int i = 0; i < ItemCatalog.itemCount; i++) markedForScrap.Add(false);
             }
 
-            Debug.Log($"[SelectForScrap] ScrapCounter.Start() | ItemCatalog count: {ItemCatalog.itemCount}");
+            Debug.Log($"[MarkForScrap] ScrapCounter.Start() | ItemCatalog count: {ItemCatalog.itemCount}");
         }
 
         public void OnCharacterMasterStart(CharacterMaster master)
         {
-            Debug.Log("[SelectForScrap] ScrapCounter.OnCharacterMasterStart()");
+            Debug.Log("[MarkForScrap] ScrapCounter.OnCharacterMasterStart()");
 
             var pcmc = master.playerCharacterMasterController;
             if (pcmc && pcmc.networkUser == networkUser) inventory = pcmc.master.inventory;
 
-            Debug.Log($"[SelectForScrap] ScrapCounter.OnCharacterMasterStart() | Inventory found: {inventory != null}");
+            Debug.Log($"[MarkForScrap] ScrapCounter.OnCharacterMasterStart() | Inventory found: {inventory != null}");
 
             if (inventory && isServer) inventory.onInventoryChanged += SyncScrapCountWithInventory;
         }
@@ -59,7 +59,7 @@ namespace SelectForScrap
 
         public bool HasItemsToScrap()
         {
-            Debug.Log("[SelectForScrap] ScrapCounter.HasItemsToScrap()");
+            Debug.Log("[MarkForScrap] ScrapCounter.HasItemsToScrap()");
             for (int i = 0; i < markedForScrap.Count; i++) { if (markedForScrap[i]) return true; }
             return false;
         }
@@ -69,20 +69,20 @@ namespace SelectForScrap
         {
             if (!Utils.ItemUtils.IsScrappable(idx)) return;
 
-            Debug.Log("[SelectForScrap] ScrapCounter.CmdSetItemMark()");
+            Debug.Log("[MarkForScrap] ScrapCounter.CmdSetItemMark()");
 
             int intIdx = (int)idx;
             while (intIdx >= markedForScrap.Count) markedForScrap.Add(false);
 
             if (markedForScrap[intIdx] != marked) markedForScrap[intIdx] = marked;
 
-            Debug.Log($"[SelectForScrap] ScrapCounter.CmdSetItemMark() | {idx} : {marked}");
+            Debug.Log($"[MarkForScrap] ScrapCounter.CmdSetItemMark() | {idx} : {marked}");
         }
 
         [Server]
         private void SyncScrapCountWithInventory()
         {
-            Debug.Log("[SelectForScrap] ScrapCounter.SyncScrapCountWithInventory()");
+            Debug.Log("[MarkForScrap] ScrapCounter.SyncScrapCountWithInventory()");
 
             for (int i = 0; i < markedForScrap.Count; ++i)
             {
@@ -94,7 +94,7 @@ namespace SelectForScrap
         [Server]
         public ItemIndex Take()
         {
-            Debug.Log("[SelectForScrap] ScrapCounter.Take()");
+            Debug.Log("[MarkForScrap] ScrapCounter.Take()");
 
             if (!HasItemsToScrap()) throw new System.Exception("No items marked for scrap");
 

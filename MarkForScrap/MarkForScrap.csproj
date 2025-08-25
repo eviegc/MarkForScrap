@@ -7,13 +7,13 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <BepInExPluginName>SelectForScrap</BepInExPluginName>
-    <BepInExPluginGuid>com.eviegc.SelectForScrap</BepInExPluginGuid>
+    <BepInExPluginName>MarkForScrap</BepInExPluginName>
+    <BepInExPluginGuid>com.eviegc.MarkForScrap</BepInExPluginGuid>
     <BepInExPluginVersion>1.0.0</BepInExPluginVersion>
   </PropertyGroup>
 
   <PropertyGroup>
-    <DevProfile>C:\Users\elizabeth\AppData\Roaming\r2modmanPlus-local\RiskOfRain2\profiles\Dev\BepInEx\plugins\eviegc-SelectForScrap</DevProfile>
+    <DevProfile>C:\Users\elizabeth\AppData\Roaming\r2modmanPlus-local\RiskOfRain2\profiles\Dev\BepInEx\plugins\eviegc-MarkForScrap</DevProfile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,14 +36,14 @@
 
   <Target Name="InstallPlugin" AfterTargets="Build" Condition="'$(Configuration)'=='Debug'">
 		<ItemGroup>
-			<_FilesToCopy Include="$(OutputPath)**\SelectForScrap.dll;$(OutputPath)**\SelectForScrap.pdb" />
+			<_FilesToCopy Include="$(OutputPath)**\MarkForScrap.dll;$(OutputPath)**\MarkForScrap.pdb" />
 		</ItemGroup>
 		
 		<Message Text="Copying @(_FilesToCopy) -&gt; $(DevProfile)" Importance="high" />
 		<Copy SourceFiles="@(_FilesToCopy)" DestinationFiles="@(_FilesToCopy->'$(DevProfile)\%(Filename)%(Extension)')" />
 
     <ItemGroup>
-      <_FilesToDelete Include="$(DevProfile)\..\SelectForScrap.*" />
+      <_FilesToDelete Include="$(DevProfile)\..\MarkForScrap.*" />
     </ItemGroup>
 
     <Message Text="Deleting @(_FilesToDelete)" Importance="high" />

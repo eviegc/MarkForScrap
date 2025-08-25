@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using System.IO;
 using UnityEngine.UI;
 
-namespace SelectForScrap
+namespace MarkForScrap
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(ItemIcon))]
@@ -15,7 +15,7 @@ namespace SelectForScrap
         private static Sprite markSprite;
         private Image image;
         private Image imageShadow;
-        private const string markPngPath = "C:/Users/elizabeth/core/git/SelectForScrap/icon-scrapper.png";
+        private const string markPngPath = "C:/Users/elizabeth/core/git/MarkForScrap/icon-scrapper.png";
 
         public ItemIndex idx
         {
@@ -24,7 +24,7 @@ namespace SelectForScrap
 
         public void Awake()
         {
-            Debug.Log("[SelectForScrap] Scrappable.Awake()");
+            Debug.Log("[MarkForScrap] Scrappable.Awake()");
 
             icon = GetComponent<ItemIcon>();
 
@@ -33,7 +33,7 @@ namespace SelectForScrap
 
         public void LateUpdate()
         {
-            // Debug.Log("[SelectForScrap] Scrappable.LateUpdate()");
+            // Debug.Log("[MarkForScrap] Scrappable.LateUpdate()");
 
             var scrapCounter = Utils.LocalUser.scrapCounter;
             bool isMarked = scrapCounter ? scrapCounter.IsMarked(idx) : false;
@@ -43,7 +43,7 @@ namespace SelectForScrap
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            Debug.Log("[SelectForScrap] Scrappable.OnPointerClick()");
+            Debug.Log("[MarkForScrap] Scrappable.OnPointerClick()");
 
             if (!Utils.ItemUtils.IsScrappable(idx)) return;
 
@@ -56,7 +56,7 @@ namespace SelectForScrap
             if (!scrapCounter) return;
 
             scrapCounter.FlipMark(idx);
-            Debug.Log($"[SelectForScrap] Scrappable.OnPointerClick() | Item: {idx}, IsMarked: {scrapCounter.IsMarked(idx)}");
+            Debug.Log($"[MarkForScrap] Scrappable.OnPointerClick() | Item: {idx}, IsMarked: {scrapCounter.IsMarked(idx)}");
         }
 
         public void EnsureSprite()
@@ -77,7 +77,7 @@ namespace SelectForScrap
 
         public void InitUI()
         {
-            Debug.Log("[SelectForScrap] Scrappable.InitUI()");
+            Debug.Log("[MarkForScrap] Scrappable.InitUI()");
 
             EnsureSprite();
 

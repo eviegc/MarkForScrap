@@ -3,9 +3,9 @@ schemaVersion = "0.0.1"
 
 [package]
 namespace = "eviegc"
-name = "SelectForScrap"
+name = "MarkForScrap"
 description = "Allows you to pre-select items from your inventory you want to automatically scrap the next time you use a scrapper."
-websiteUrl = "https://github.com/eviegc/SelectForScrap"
+websiteUrl = "https://github.com/eviegc/MarkForScrap"
 containsNsfwContent = false
 
 [package.dependencies]
@@ -21,12 +21,12 @@ source = "CHANGELOG.md"
 target = "CHANGELOG.md"
 
 [[build.copy]]
-source = "SelectForScrap/bin/Release/netstandard2.1/SelectForScrap.dll"
-target = "SelectForScrap.dll"
+source = "MarkForScrap/bin/Release/netstandard2.1/MarkForScrap.dll"
+target = "SelectForMarkForScrapScrap.dll"
 
 [[build.copy]]
-source = "SelectForScrap/bin/Release/netstandard2.1/SelectForScrap.pdb"
-target = "SelectForScrap.pdb"
+source = "MarkForScrap/bin/Release/netstandard2.1/MarkForScrap.pdb"
+target = "MarkForScrap.pdb"
 
 [general]
 repository = "https://thunderstore.io"

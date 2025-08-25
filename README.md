@@ -1,4 +1,4 @@
-# SelectForScrap
+# MarkForScrap
 
 A mod that allows you to select items from your inventory that will be automagically scrapped the next time you use a scrapper.
 
