@@ -41,6 +41,13 @@
 		
 		<Message Text="Copying @(_FilesToCopy) -&gt; $(DevProfile)" Importance="high" />
 		<Copy SourceFiles="@(_FilesToCopy)" DestinationFiles="@(_FilesToCopy->'$(DevProfile)\%(Filename)%(Extension)')" />
+
+    <ItemGroup>
+      <_FilesToDelete Include="$(DevProfile)\..\SelectForScrap.*" />
+    </ItemGroup>
+
+    <Message Text="Deleting @(_FilesToDelete)" Importance="high" />
+    <Delete Files="@(_FilesToDelete)" />
 	</Target>
 
   <Target Name="PackageForThunderstore" AfterTargets="PostBuildEvent" Condition="$(Configuration) == 'Release'">

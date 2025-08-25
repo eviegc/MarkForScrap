@@ -8,7 +8,7 @@ namespace SelectForScrap
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(ItemIcon))]
-    public class Scrappable : MonoBehaviour, IPointerClickHandler
+    public class ItemIconScrapSelector : MonoBehaviour, IPointerClickHandler
     {
         private HGTextMeshProUGUI scrapCount;
         private ItemIcon icon;
@@ -32,7 +32,8 @@ namespace SelectForScrap
             // Debug.Log("[SelectForScrap] Scrappable.LateUpdate()");
 
             var scrapCounter = Utils.LocalUser.scrapCounter;
-            scrapCount.text = scrapCounter ? scrapCounter[idx].ToString() : "";
+            bool isMarked = scrapCounter ? scrapCounter.IsMarked(idx) : false;
+            scrapCount.text = isMarked ? "1" : "0";
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -44,29 +45,18 @@ namespace SelectForScrap
             if (!Input.GetKey(KeyCode.LeftShift)) return; 
 
             var scrapCounter = Utils.LocalUser.scrapCounter;
-            if (!scrapCounter)
-            {
-                Debug.Log("[SelectForScrap] Scrappable.OnPointerClick() | No ScrapCounter Found");
-                return;
-            }
+            if (!scrapCounter) return;
 
-            var delta = 0;
             switch (eventData.button)
             {
                 case PointerEventData.InputButton.Left:
-                    delta = 1;
-                    break;
-                case PointerEventData.InputButton.Middle:
-                    delta = -scrapCounter[idx];
+                    scrapCounter.MarkItem(idx);
                     break;
                 case PointerEventData.InputButton.Right:
-                    delta = -1;
+                    scrapCounter.UnmarkItem(idx);
                     break;
             }
-
-            scrapCounter[idx] += delta;
-
-            Debug.Log($"[SelectForScrap] Scrappable.OnPointerClick() | Item: {idx}, ScrapCount: {scrapCounter[idx]}, Delta: {delta}");
+            Debug.Log($"[SelectForScrap] Scrappable.OnPointerClick() | Item: {idx}, IsMarked: {scrapCounter.IsMarked(idx)}");
         }
 
         public void InitUI()

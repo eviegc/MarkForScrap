@@ -4,22 +4,20 @@ namespace SelectForScrap.Utils
 {
     public static class LocalUser
     {
-        public static CharacterMaster master
+        public static NetworkUser networkUser
         {
             // This won't work with local split screen, but oh well
-            get { return LocalUserManager.GetFirstLocalUser()?.cachedMasterController?.master; }
+            get { return LocalUserManager.GetFirstLocalUser()?.currentNetworkUser; }
         }
 
-        public static ScrapCounter scrapCounter
+        public static CharacterMaster master
         {
-            get { return master?.GetComponent<ScrapCounter>(); }
+            get { return networkUser?.master; }
         }
 
-        public static bool IsLocal(CharacterMaster master)
+        public static InventoryScrapCounter scrapCounter
         {
-            var pcmc = master ? master.playerCharacterMasterController : null;
-            var nu = pcmc ? pcmc.networkUser : null;
-            return nu && nu.localUser != null;
+            get { return networkUser?.GetComponent<InventoryScrapCounter>(); }
         }
     }
 }
