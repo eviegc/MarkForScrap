@@ -32,7 +32,7 @@ public class SelectForScrapPlugin : BaseUnityPlugin
         On.RoR2.NetworkUser.Start += NetworkUser_Start;
 
         // Intercept scrapper logic to pull from our own list
-        On.RoR2.ScrapperController.AssignPotentialInteractor += ScrapperController_AssignPotentialInteractor;
+        On.RoR2.Interactor.PerformInteraction += Interactor_PerformInteraction;
     }
 
     public void OnDestroy()
@@ -42,28 +42,35 @@ public class SelectForScrapPlugin : BaseUnityPlugin
         On.RoR2.UI.HUD.Awake -= HUD_Awake;
         On.RoR2.UI.ItemIcon.Awake -= ItemIcon_Awake;
         On.RoR2.NetworkUser.Start -= NetworkUser_Start;
-        On.RoR2.ScrapperController.AssignPotentialInteractor -= ScrapperController_AssignPotentialInteractor;
+        On.RoR2.Interactor.PerformInteraction -= Interactor_PerformInteraction;
     }
 
-    private void ScrapperController_AssignPotentialInteractor(On.RoR2.ScrapperController.orig_AssignPotentialInteractor orig, ScrapperController self, Interactor activator)
+    private void Interactor_PerformInteraction(On.RoR2.Interactor.orig_PerformInteraction orig, Interactor activator, GameObject interactableObject)
     {
-        orig(self, activator);
         if (!NetworkServer.active) return;
+        Debug.Log("[SelectForScrap] SelectForScrapPlugin.Interactor_PerformInteraction()");
 
-        Debug.Log("[SelectForScrap] SelectForScrapPlugin.ScrapperController_AssignPotentialInteractor()");
+        var controller = interactableObject.GetComponentInParent<ScrapperController>();
+        if (!controller)
+        {
+            orig(activator, interactableObject);
+            return;
+        }
 
         var characterBody = activator.GetComponent<CharacterBody>();
         var networkUser = characterBody ? Util.LookUpBodyNetworkUser(characterBody) : null;
         var scrapCounter = networkUser?.GetComponent<InventoryScrapCounter>();
-        if (!(scrapCounter && scrapCounter.HasItemsToScrap())) return;
+        if (!(scrapCounter && scrapCounter.HasItemsToScrap()))
+        {
+            orig(activator, interactableObject);
+            return;
+        }
 
         ItemIndex itemToScrap = scrapCounter.Take();
-        Debug.Log($"[SelectForScrap] SelectForScrapPlugin.ScrapperController_AssignPotentialInteractor() | Took {itemToScrap}");
+        Debug.Log($"[SelectForScrap] SelectForScrapPlugin.Interactor_PerformInteraction() | Took {itemToScrap}");
 
         var pickup = PickupCatalog.FindPickupIndex(itemToScrap);
-        var ctrl = self.GetComponent<ScrapperController>();
-
-        ctrl.BeginScrapping(pickup.value);
+        controller.BeginScrapping(pickup.value);
     }
 
     private void NetworkUser_Start(On.RoR2.NetworkUser.orig_Start orig, NetworkUser self)
