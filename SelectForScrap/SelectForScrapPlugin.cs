@@ -47,29 +47,22 @@ public class SelectForScrapPlugin : BaseUnityPlugin
 
     private void Interactor_PerformInteraction(On.RoR2.Interactor.orig_PerformInteraction orig, Interactor activator, GameObject interactableObject)
     {
-        if (!NetworkServer.active) return;
+        if (!NetworkServer.active) { orig(activator, interactableObject); return; }
         Debug.Log("[SelectForScrap] SelectForScrapPlugin.Interactor_PerformInteraction()");
 
         var controller = interactableObject.GetComponentInParent<ScrapperController>();
-        if (!controller)
-        {
-            orig(activator, interactableObject);
-            return;
-        }
+        if (!controller) { orig(activator, interactableObject); return; }
 
         var characterBody = activator.GetComponent<CharacterBody>();
         var networkUser = characterBody ? Util.LookUpBodyNetworkUser(characterBody) : null;
         var scrapCounter = networkUser?.GetComponent<InventoryScrapCounter>();
-        if (!(scrapCounter && scrapCounter.HasItemsToScrap()))
-        {
-            orig(activator, interactableObject);
-            return;
-        }
+        if (!(scrapCounter && scrapCounter.HasItemsToScrap())) { orig(activator, interactableObject); return; }
 
         ItemIndex itemToScrap = scrapCounter.Take();
         Debug.Log($"[SelectForScrap] SelectForScrapPlugin.Interactor_PerformInteraction() | Took {itemToScrap}");
 
         var pickup = PickupCatalog.FindPickupIndex(itemToScrap);
+        controller.AssignPotentialInteractor(activator);
         controller.BeginScrapping(pickup.value);
     }
 

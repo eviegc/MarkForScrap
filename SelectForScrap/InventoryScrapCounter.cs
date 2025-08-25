@@ -45,13 +45,17 @@ namespace SelectForScrap
             if (inventory && isServer) inventory.onInventoryChanged += SyncScrapCountWithInventory;
         }
 
+        public void MarkItem(ItemIndex idx) { CmdSetItemMark(idx, true); }
+        public void UnmarkItem(ItemIndex idx) { CmdSetItemMark(idx, false);  }
+        public void FlipMark(ItemIndex idx)
+        {
+            if (IsMarked(idx)) UnmarkItem(idx); else MarkItem(idx);
+        }
         public bool IsMarked(ItemIndex idx)
         {
             if ((int)idx >= markedForScrap.Count) return false;
             return markedForScrap[(int)idx];
         }
-        public void MarkItem(ItemIndex idx) { CmdSetItemMark(idx, true); }
-        public void UnmarkItem(ItemIndex idx) { CmdSetItemMark(idx, false);  }
 
         public bool HasItemsToScrap()
         {
@@ -63,6 +67,8 @@ namespace SelectForScrap
         [Command]
         private void CmdSetItemMark(ItemIndex idx, bool marked)
         {
+            if (!Utils.ItemUtils.IsScrappable(idx)) return;
+
             Debug.Log("[SelectForScrap] ScrapCounter.CmdSetItemMark()");
 
             int intIdx = (int)idx;
@@ -97,8 +103,6 @@ namespace SelectForScrap
             {
                 if (markedForScrap[markedItemIdx]) break;
             }
-
-            markedForScrap[markedItemIdx] = false;
 
             return (ItemIndex)markedItemIdx;
         }
