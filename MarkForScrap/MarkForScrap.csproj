@@ -34,6 +34,10 @@
     <PackageReference Include="Rune580.Mods.RiskOfRain2.RiskOfOptions" Version="2.8.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\AssetBundles\**" />
+  </ItemGroup>
+
   <Target Name="InstallPlugin" AfterTargets="Build" Condition="'$(Configuration)'=='Debug'">
 		<ItemGroup>
 			<_FilesToCopy Include="$(OutputPath)**\MarkForScrap.dll;$(OutputPath)**\MarkForScrap.pdb" />

@@ -62,17 +62,7 @@ namespace MarkForScrap
         public void EnsureSprite()
         {
             if (markSprite) return;
-
-            byte[] imageData = File.ReadAllBytes(markPngPath);
-
-            Texture2D texture = new Texture2D(2, 2);
-            texture.LoadImage(imageData);
-
-            markSprite = Sprite.Create(
-                texture, 
-                new Rect(0, 0, texture.width, texture.height), 
-                new Vector2(0.5f, 0.5f)
-            );
+            markSprite = Resources.Assets.Load<Sprite>("Assets/icon-scrapper.png");
         }
 
         public void InitUI()

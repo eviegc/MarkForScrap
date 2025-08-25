@@ -19,6 +19,7 @@ public class MarkForScrapPlugin : BaseUnityPlugin
     public void Awake()
     {
         Debug.Log("[MarkForScrap] MarkForScrapPlugin.Awake()");
+        Resources.Assets.LoadAssets();
         InitConfig();
 
         // Make sure we mark the inventory list in the top-bar for later use
@@ -114,7 +115,9 @@ public class MarkForScrapPlugin : BaseUnityPlugin
     {
         // Init config
         ModSettingsManager.SetModDescription("Allows you to pre-select items from your inventory you want to automatically scrap the next time you use a scrapper.");
-        //ModSettingsManager.SetModIcon(null);
+        
+        Sprite icon = Resources.Assets.Load<Sprite>("Assets/icon.png");
+        ModSettingsManager.SetModIcon(icon);
 
         // Key bind config
         var select_item_key = Config.Bind(
