@@ -207,3 +207,4 @@ nunit-*.xml
 
 # Custom
 _local/
+tools/NetworkWeaver/
