@@ -12,7 +12,13 @@ Note: **This mod requires both server-side and client-side installation.**
 
 The keybinding for marking an item is `[T]` by default and can be configured, see below.
 
-To mark an item, open the scoreboard (`[Tab]`) and mouse hover over the item you want to mark in the top inventory panel, then press the keybinding (`[T]`) to mark.
+To mark an item, open the scoreboard (`[Tab]`) and mouse hover over the item you want to mark in the top inventory panel:
+
+![Top-bar inventory hover](https://raw.githubusercontent.com/eviegc/MarkForScrap/refs/heads/main/Thunderstore/images/item_to_mark.png)
+
+Then press the keybinding (`[T]`) to mark (and you get a cool little graphic!). Multiple items can be marked at once:
+
+![Items marked in the top-bar inventory](https://raw.githubusercontent.com/eviegc/MarkForScrap/refs/heads/main/Thunderstore/images/marked_items.png)
 
 Repeating the same process on an already marked item will unmark it.
 
