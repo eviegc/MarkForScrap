@@ -2,20 +2,19 @@ using RoR2;
 using RoR2.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using System.IO;
 using UnityEngine.UI;
 
 namespace MarkForScrap
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(ItemIcon))]
-    public class ItemIconScrapSelector : MonoBehaviour, IPointerClickHandler
+    public class ItemIconScrapSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         private ItemIcon icon;
         private static Sprite markSprite;
         private Image image;
         private Image imageShadow;
-        private const string markPngPath = "C:/Users/elizabeth/core/git/MarkForScrap/icon-scrapper.png";
+        private bool isHover = false;
 
         public ItemIndex idx
         {
@@ -31,6 +30,21 @@ namespace MarkForScrap
             InitUI();
         }
 
+        public void Update()
+        {
+            if (!isHover) return;  // Mouse isn't hovering over
+            if (!Utils.PatchedKeyboardShortcut.IsDown(PluginConfig.ToggleScrapKey.Value)) return; // Scrap key isn't pressed
+            if (!Utils.ItemUtils.IsScrappable(idx)) return;  // Item isn't scrappable
+
+            Debug.Log("[MarkForScrap] Scrappable.Update()");
+
+            var scrapCounter = Utils.LocalUser.scrapCounter;
+            if (!scrapCounter) return;
+
+            scrapCounter.FlipMark(idx);
+            Debug.Log($"[MarkForScrap] Scrappable.Update() | Item: {idx}, IsMarked: {scrapCounter.IsMarked(idx)}");
+        }
+
         public void LateUpdate()
         {
             // Debug.Log("[MarkForScrap] Scrappable.LateUpdate()");
@@ -41,23 +55,8 @@ namespace MarkForScrap
             imageShadow.enabled = isMarked;
         }
 
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            Debug.Log("[MarkForScrap] Scrappable.OnPointerClick()");
-
-            if (!Utils.ItemUtils.IsScrappable(idx)) return;
-
-            // TODO config? do we need a modifier key? how does it play with yeet
-            // Only allow selection while holding shift
-            if (!Input.GetKey(KeyCode.LeftShift)) return;
-            if (eventData.button != PointerEventData.InputButton.Left) return;
-
-            var scrapCounter = Utils.LocalUser.scrapCounter;
-            if (!scrapCounter) return;
-
-            scrapCounter.FlipMark(idx);
-            Debug.Log($"[MarkForScrap] Scrappable.OnPointerClick() | Item: {idx}, IsMarked: {scrapCounter.IsMarked(idx)}");
-        }
+        public void OnPointerEnter(PointerEventData eventData) { isHover = true; }
+        public void OnPointerExit(PointerEventData eventData) { isHover = false; }
 
         public void EnsureSprite()
         {

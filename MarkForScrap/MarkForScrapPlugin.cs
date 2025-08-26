@@ -116,21 +116,16 @@ public class MarkForScrapPlugin : BaseUnityPlugin
         // Init config
         ModSettingsManager.SetModDescription("Allows you to pre-select items from your inventory you want to automatically scrap the next time you use a scrapper.");
         
-        Sprite icon = Resources.Assets.Load<Sprite>("Assets/icon.png");
-        ModSettingsManager.SetModIcon(icon);
+        Sprite modIcon = Resources.Assets.Load<Sprite>("Assets/icon.png");
+        ModSettingsManager.SetModIcon(modIcon);
 
-        // Key bind config
-        var select_item_key = Config.Bind(
+        PluginConfig.ToggleScrapKey = Config.Bind(
             "Input",
-            "Select item",
-            new KeyboardShortcut(KeyCode.S, modifiers: KeyCode.LeftShift),
-            "Key to select an item to scrap"
+            "Toggle item for scrap",
+            new KeyboardShortcut(KeyCode.T),
+            "When mouse hovering over an item in the top bar, pressing this key will (un)mark it for scrapping."
         );
-        ModSettingsManager.AddOption(new KeyBindOption(select_item_key));
-
-        // Client config
-
-        // Server config
+        ModSettingsManager.AddOption(new KeyBindOption(PluginConfig.ToggleScrapKey));
     }
 
     // Used only so we can find the top-bar inventory later on
