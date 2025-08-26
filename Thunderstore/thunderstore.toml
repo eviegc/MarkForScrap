@@ -4,7 +4,7 @@ schemaVersion = "0.0.1"
 [package]
 namespace = "eviegc"
 name = "MarkForScrap"
-description = "Allows you to pre-select items from your inventory you want to automatically scrap the next time you use a scrapper."
+description = "Allows you to mark items in your inventory that will be automagically scrapped the next time you use a scrapper."
 websiteUrl = "https://github.com/eviegc/MarkForScrap"
 containsNsfwContent = false
 
@@ -21,11 +21,11 @@ source = "CHANGELOG.md"
 target = "CHANGELOG.md"
 
 [[build.copy]]
-source = "MarkForScrap/bin/Release/netstandard2.1/MarkForScrap.dll"
+source = "../MarkForScrap/bin/Release/netstandard2.1/MarkForScrap.dll"
 target = "MarkForScrap.dll"
 
 [[build.copy]]
-source = "MarkForScrap/bin/Release/netstandard2.1/MarkForScrap.dll.mdb"
+source = "../MarkForScrap/bin/Release/netstandard2.1/MarkForScrap.dll.mdb"
 target = "MarkForScrap.dll.mdb"
 
 [general]

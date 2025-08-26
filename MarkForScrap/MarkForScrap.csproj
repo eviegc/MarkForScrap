@@ -9,11 +9,12 @@
   <PropertyGroup>
     <BepInExPluginName>MarkForScrap</BepInExPluginName>
     <BepInExPluginGuid>com.eviegc.MarkForScrap</BepInExPluginGuid>
-    <BepInExPluginVersion>1.0.0</BepInExPluginVersion>
+    <BepInExPluginVersion>1.0.1</BepInExPluginVersion>
   </PropertyGroup>
 
   <PropertyGroup>
-    <DevProfile>C:\Users\elizabeth\AppData\Roaming\r2modmanPlus-local\RiskOfRain2\profiles\Dev\BepInEx\plugins\eviegc-MarkForScrap</DevProfile>
+    <!-- The profile to copy the compiled mod DLL in to after a debug build. Edit this for your local setup. -->
+    <DevProfile>$(AppData)\r2modmanPlus-local\RiskOfRain2\profiles\Dev\BepInEx\plugins\eviegc-MarkForScrap</DevProfile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -46,6 +47,7 @@
 		<Message Text="Copying @(_FilesToCopy) -&gt; $(DevProfile)" Importance="high" />
 		<Copy SourceFiles="@(_FilesToCopy)" DestinationFiles="@(_FilesToCopy->'$(DevProfile)\%(Filename)%(Extension)')" />
 
+    <!-- Delete the Weaver patched files so it patches them again rather than skipping -->
     <ItemGroup>
       <_FilesToDelete Include="$(DevProfile)\..\MarkForScrap.*" />
     </ItemGroup>
@@ -55,11 +57,11 @@
 	</Target>
 
   <Target Name="PackageForThunderstore" AfterTargets="PostBuildEvent" Condition="$(Configuration) == 'Release'">
-    <Exec Command="tcli build --config-path $(ProjectDir)../thunderstore.toml --package-version $(BepInExPluginVersion)" />
+    <Exec Command="tcli build --config-path $(ProjectDir)../Thunderstore/thunderstore.toml --package-version $(BepInExPluginVersion)" />
   </Target>
 
   <Target Name="PublishToThunderstore">
-    <Exec Command="tcli publish --config-path $(ProjectDir)../thunderstore.toml --file $(ProjectDir)../build/*-$(BepInExPluginVersion).zip" />
+    <Exec Command="tcli publish --config-path $(ProjectDir)../Thunderstore/thunderstore.toml --file $(ProjectDir)../Thunderstore/build/*-$(BepInExPluginVersion).zip" />
   </Target>
 
 </Project>

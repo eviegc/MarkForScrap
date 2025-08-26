@@ -1,7 +1,9 @@
 # MarkForScrap
 
-A mod that allows you to select items from your inventory that will be automagically scrapped the next time you use a scrapper.
+A Risk of Rain 2 mod that allows you to mark items in your inventory that will be automagically scrapped the next time you use a scrapper.
 
-Works just like a regular scrapper, except the item to scrap is read from your inventory rather than the selection UI. Falls back to the selection UI in the case you have no pre-selected items.
+The goal with this mod is to be as close to vanilla behaviour as possible while introducing the convenience of pre-selecting items you want to scrap.
 
-**This mod requires both server-side and client-side installation**
+The vanilla scrapper logic still runs - your item is sucked out of your inventory, the animation plays, and it spits out your scrap - the mod simply circumvents the selection window if you already have pre-selected items.
+
+Note: **This mod requires both server-side and client-side installation.**
