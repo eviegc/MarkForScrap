@@ -36,7 +36,7 @@ public class MarkForScrapPlugin : BaseUnityPlugin
         On.RoR2.UI.ItemIcon.Awake += ItemIcon_Awake;
 
         // Attach our scrap counter to the NetworkUser so it syncs properly
-        On.RoR2.NetworkUser.Start += NetworkUser_Start;
+        On.RoR2.NetworkUser.OnEnable += NetworkUser_OnEnable;
 
         // Intercept scrapper logic to pull from our own list
         On.RoR2.Interactor.PerformInteraction += Interactor_PerformInteraction;
@@ -48,7 +48,7 @@ public class MarkForScrapPlugin : BaseUnityPlugin
 
         On.RoR2.UI.HUD.Awake -= HUD_Awake;
         On.RoR2.UI.ItemIcon.Awake -= ItemIcon_Awake;
-        On.RoR2.NetworkUser.Start -= NetworkUser_Start;
+        On.RoR2.NetworkUser.OnEnable -= NetworkUser_OnEnable;
         On.RoR2.Interactor.PerformInteraction -= Interactor_PerformInteraction;
     }
 
@@ -73,15 +73,15 @@ public class MarkForScrapPlugin : BaseUnityPlugin
         controller.BeginScrapping(pickup.value);
     }
 
-    private void NetworkUser_Start(On.RoR2.NetworkUser.orig_Start orig, NetworkUser self)
+    private void NetworkUser_OnEnable(On.RoR2.NetworkUser.orig_OnEnable orig, NetworkUser self)
     {
         orig(self);
 
-        // Logger.LogDebug("MarkForScrapPlugin.NetworkUser_Start()");
+        // Logger.LogDebug("MarkForScrapPlugin.NetworkUser_OnEnable()");
 
         if (!self.GetComponent<InventoryScrapCounter>())
         {
-            Logger.LogDebug("MarkForScrapPlugin.NetworkUser_Start() | Adding InventoryScrapCounter");
+            Logger.LogDebug("MarkForScrapPlugin.NetworkUser_OnEnable() | Adding InventoryScrapCounter");
             self.gameObject.AddComponent<InventoryScrapCounter>();
         }
     }

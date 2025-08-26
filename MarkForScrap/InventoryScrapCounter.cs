@@ -83,7 +83,7 @@ namespace MarkForScrap
         [Server]
         private void SyncScrapCountWithInventory()
         {
-            MarkForScrapPlugin.Log.LogDebug("ScrapCounter.SyncScrapCountWithInventory()");
+            // MarkForScrapPlugin.Log.LogDebug("ScrapCounter.SyncScrapCountWithInventory()");
 
             for (int i = 0; i < markedForScrap.Count; ++i)
             {
