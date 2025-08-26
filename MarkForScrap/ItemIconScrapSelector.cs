@@ -23,7 +23,7 @@ namespace MarkForScrap
 
         public void Awake()
         {
-            MarkForScrapPlugin.Log.LogDebug("[MarkForScrap] Scrappable.Awake()");
+            // MarkForScrapPlugin.Log.LogDebug("Scrappable.Awake()");
 
             icon = GetComponent<ItemIcon>();
 
@@ -36,18 +36,19 @@ namespace MarkForScrap
             if (!Utils.PatchedKeyboardShortcut.IsDown(PluginConfig.ToggleScrapKey.Value)) return; // Scrap key isn't pressed
             if (!Utils.ItemUtils.IsScrappable(idx)) return;  // Item isn't scrappable
 
-            MarkForScrapPlugin.Log.LogDebug("[MarkForScrap] Scrappable.Update()");
+            // MarkForScrapPlugin.Log.LogDebug("Scrappable.Update()");
 
             var scrapCounter = Utils.LocalUser.scrapCounter;
             if (!scrapCounter) return;
 
             scrapCounter.FlipMark(idx);
-            MarkForScrapPlugin.Log.LogDebug($"[MarkForScrap] Scrappable.Update() | Item: {idx}, IsMarked: {scrapCounter.IsMarked(idx)}");
+            
+            MarkForScrapPlugin.Log.LogDebug($"Scrappable.Update() | Item: {idx}, IsMarked: {scrapCounter.IsMarked(idx)}");
         }
 
         public void LateUpdate()
         {
-            // MarkForScrapPlugin.Log.LogDebug("[MarkForScrap] Scrappable.LateUpdate()");
+            // MarkForScrapPlugin.Log.LogDebug("Scrappable.LateUpdate()");
 
             var scrapCounter = Utils.LocalUser.scrapCounter;
             bool isMarked = scrapCounter ? scrapCounter.IsMarked(idx) : false;
@@ -66,7 +67,7 @@ namespace MarkForScrap
 
         public void InitUI()
         {
-            MarkForScrapPlugin.Log.LogDebug("[MarkForScrap] Scrappable.InitUI()");
+            // MarkForScrapPlugin.Log.LogDebug("Scrappable.InitUI()");
 
             EnsureSprite();
 

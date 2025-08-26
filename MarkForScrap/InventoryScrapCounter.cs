@@ -23,24 +23,24 @@ namespace MarkForScrap
         [ServerCallback]
         public void Start()
         {
-            MarkForScrapPlugin.Log.LogDebug("[MarkForScrap] ScrapCounter.Start()");
+            // MarkForScrapPlugin.Log.LogDebug("ScrapCounter.Start()");
             if (isServer)
             {
                 markedForScrap.Clear();
                 for (int i = 0; i < ItemCatalog.itemCount; i++) markedForScrap.Add(false);
             }
 
-            MarkForScrapPlugin.Log.LogDebug($"[MarkForScrap] ScrapCounter.Start() | ItemCatalog count: {ItemCatalog.itemCount}");
+            // MarkForScrapPlugin.Log.LogDebug($"ScrapCounter.Start() | ItemCatalog count: {ItemCatalog.itemCount}");
         }
 
         public void OnCharacterMasterStart(CharacterMaster master)
         {
-            MarkForScrapPlugin.Log.LogDebug("[MarkForScrap] ScrapCounter.OnCharacterMasterStart()");
+            // MarkForScrapPlugin.Log.LogDebug("ScrapCounter.OnCharacterMasterStart()");
 
             var pcmc = master.playerCharacterMasterController;
             if (pcmc && pcmc.networkUser == networkUser) inventory = pcmc.master.inventory;
 
-            MarkForScrapPlugin.Log.LogDebug($"[MarkForScrap] ScrapCounter.OnCharacterMasterStart() | Inventory found: {inventory != null}");
+            // MarkForScrapPlugin.Log.LogDebug($"ScrapCounter.OnCharacterMasterStart() | Inventory found: {inventory != null}");
 
             if (inventory && isServer) inventory.onInventoryChanged += SyncScrapCountWithInventory;
         }
@@ -59,7 +59,8 @@ namespace MarkForScrap
 
         public bool HasItemsToScrap()
         {
-            MarkForScrapPlugin.Log.LogDebug("[MarkForScrap] ScrapCounter.HasItemsToScrap()");
+            // MarkForScrapPlugin.Log.LogDebug("ScrapCounter.HasItemsToScrap()");
+
             for (int i = 0; i < markedForScrap.Count; i++) { if (markedForScrap[i]) return true; }
             return false;
         }
@@ -69,20 +70,20 @@ namespace MarkForScrap
         {
             if (!Utils.ItemUtils.IsScrappable(idx)) return;
 
-            MarkForScrapPlugin.Log.LogDebug("[MarkForScrap] ScrapCounter.CmdSetItemMark()");
+            // MarkForScrapPlugin.Log.LogDebug("ScrapCounter.CmdSetItemMark()");
 
             int intIdx = (int)idx;
             while (intIdx >= markedForScrap.Count) markedForScrap.Add(false);
 
             if (markedForScrap[intIdx] != marked) markedForScrap[intIdx] = marked;
 
-            MarkForScrapPlugin.Log.LogDebug($"[MarkForScrap] ScrapCounter.CmdSetItemMark() | {idx} : {marked}");
+            MarkForScrapPlugin.Log.LogDebug($"ScrapCounter.CmdSetItemMark() | {idx} : {marked}");
         }
 
         [Server]
         private void SyncScrapCountWithInventory()
         {
-            MarkForScrapPlugin.Log.LogDebug("[MarkForScrap] ScrapCounter.SyncScrapCountWithInventory()");
+            MarkForScrapPlugin.Log.LogDebug("ScrapCounter.SyncScrapCountWithInventory()");
 
             for (int i = 0; i < markedForScrap.Count; ++i)
             {
@@ -94,7 +95,7 @@ namespace MarkForScrap
         [Server]
         public ItemIndex Take()
         {
-            MarkForScrapPlugin.Log.LogDebug("[MarkForScrap] ScrapCounter.Take()");
+            MarkForScrapPlugin.Log.LogDebug("ScrapCounter.Take()");
 
             if (!HasItemsToScrap()) throw new System.Exception("No items marked for scrap");
 

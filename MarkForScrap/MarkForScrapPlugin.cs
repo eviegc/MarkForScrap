@@ -7,6 +7,7 @@ using UnityEngine;
 using RoR2;
 using UnityEngine.Networking;
 using BepInEx.Logging;
+using UnityEngine.Assertions.Must;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission( SecurityAction.RequestMinimum, SkipVerification = true )]
@@ -21,7 +22,7 @@ public class MarkForScrapPlugin : BaseUnityPlugin
 
     public void Awake()
     {
-        Logger.LogDebug("[MarkForScrap] MarkForScrapPlugin.Awake()");
+        // Logger.LogDebug("MarkForScrapPlugin.Awake()");
 
         Log = Logger;
         Resources.Assets.LoadAssets();
@@ -43,7 +44,7 @@ public class MarkForScrapPlugin : BaseUnityPlugin
 
     public void OnDestroy()
     {
-        Logger.LogDebug("[MarkForScrap] MarkForScrapPlugin.OnDestroy()");
+        // Logger.LogDebug("MarkForScrapPlugin.OnDestroy()");
 
         On.RoR2.UI.HUD.Awake -= HUD_Awake;
         On.RoR2.UI.ItemIcon.Awake -= ItemIcon_Awake;
@@ -54,7 +55,7 @@ public class MarkForScrapPlugin : BaseUnityPlugin
     private void Interactor_PerformInteraction(On.RoR2.Interactor.orig_PerformInteraction orig, Interactor activator, GameObject interactableObject)
     {
         if (!NetworkServer.active) { orig(activator, interactableObject); return; }
-        Logger.LogDebug("[MarkForScrap] MarkForScrapPlugin.Interactor_PerformInteraction()");
+        // Logger.LogDebug("MarkForScrapPlugin.Interactor_PerformInteraction()");
 
         var controller = interactableObject.GetComponentInParent<ScrapperController>();
         if (!controller) { orig(activator, interactableObject); return; }
@@ -65,7 +66,7 @@ public class MarkForScrapPlugin : BaseUnityPlugin
         if (!(scrapCounter && scrapCounter.HasItemsToScrap())) { orig(activator, interactableObject); return; }
 
         ItemIndex itemToScrap = scrapCounter.Take();
-        Logger.LogDebug($"[MarkForScrap] MarkForScrapPlugin.Interactor_PerformInteraction() | Took {itemToScrap}");
+        Logger.LogDebug($"MarkForScrapPlugin.Interactor_PerformInteraction() | Took {itemToScrap}");
 
         var pickup = PickupCatalog.FindPickupIndex(itemToScrap);
         controller.AssignPotentialInteractor(activator);
@@ -76,11 +77,11 @@ public class MarkForScrapPlugin : BaseUnityPlugin
     {
         orig(self);
 
-        Logger.LogDebug("[MarkForScrap] MarkForScrapPlugin.NetworkUser_Start()");
+        // Logger.LogDebug("MarkForScrapPlugin.NetworkUser_Start()");
 
         if (!self.GetComponent<InventoryScrapCounter>())
         {
-            Logger.LogDebug("[MarkForScrap] MarkForScrapPlugin.NetworkUser_Start() | Adding InventoryScrapCounter");
+            Logger.LogDebug("MarkForScrapPlugin.NetworkUser_Start() | Adding InventoryScrapCounter");
             self.gameObject.AddComponent<InventoryScrapCounter>();
         }
     }
@@ -90,7 +91,7 @@ public class MarkForScrapPlugin : BaseUnityPlugin
         orig(self);
         if (!NetworkClient.active) return;
 
-        Logger.LogDebug("[MarkForScrap] MarkForScrapPlugin.HUD_Awake()");
+        // Logger.LogDebug("MarkForScrapPlugin.HUD_Awake()");
 
         var invDisplay = self.itemInventoryDisplay;
 
@@ -105,11 +106,11 @@ public class MarkForScrapPlugin : BaseUnityPlugin
         orig(self);
         if (!NetworkClient.active) return;
 
-        // Logger.LogDebug("[MarkForScrap] MarkForScrapPlugin.ItemIcon_Awake()");
+        // Logger.LogDebug("MarkForScrapPlugin.ItemIcon_Awake()");
 
         if (!self.GetComponentInParent<MainInventoryMarker>()) return;
 
-        Logger.LogDebug("[MarkForScrap] MarkForScrapPlugin.ItemIcon_Awake() | Got ItemIcon the main inventory");
+        Logger.LogDebug("MarkForScrapPlugin.ItemIcon_Awake() | Got ItemIcon the main inventory");
 
         if (self.GetComponent<ItemIconScrapSelector>()) return;
 
