@@ -7,12 +7,16 @@ namespace MarkForScrap.Utils
         public static bool IsScrappable(ItemIndex idx)
         {
             ItemDef def = ItemCatalog.GetItemDef(idx);
-            if (def == null) return false;
+            if (def == null)
+                return false;
 
-            if (def.ContainsTag(ItemTag.Scrap)) return false;
-            if (def.ContainsTag(ItemTag.WorldUnique)) return false;
-            if (def.hidden) return false;
-            
+            if (def.ContainsTag(ItemTag.Scrap))
+                return false;
+            if (def.ContainsTag(ItemTag.WorldUnique))
+                return false;
+            if (def.hidden)
+                return false;
+
             switch (def.tier)
             {
                 case ItemTier.Tier1:

@@ -1,16 +1,15 @@
 ﻿using System.Security.Permissions;
 using BepInEx;
 using BepInEx.Configuration;
+using BepInEx.Logging;
 using RiskOfOptions;
 using RiskOfOptions.Options;
-using UnityEngine;
 using RoR2;
+using UnityEngine;
 using UnityEngine.Networking;
-using BepInEx.Logging;
-using UnityEngine.Assertions.Must;
 
 #pragma warning disable CS0618 // Type or member is obsolete
-[assembly: SecurityPermission( SecurityAction.RequestMinimum, SkipVerification = true )]
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
 
 namespace MarkForScrap;
 
@@ -52,18 +51,34 @@ public class MarkForScrapPlugin : BaseUnityPlugin
         On.RoR2.Interactor.PerformInteraction -= Interactor_PerformInteraction;
     }
 
-    private void Interactor_PerformInteraction(On.RoR2.Interactor.orig_PerformInteraction orig, Interactor activator, GameObject interactableObject)
+    private void Interactor_PerformInteraction(
+        On.RoR2.Interactor.orig_PerformInteraction orig,
+        Interactor activator,
+        GameObject interactableObject
+    )
     {
-        if (!NetworkServer.active) { orig(activator, interactableObject); return; }
+        if (!NetworkServer.active)
+        {
+            orig(activator, interactableObject);
+            return;
+        }
         // Logger.LogDebug("MarkForScrapPlugin.Interactor_PerformInteraction()");
 
         var controller = interactableObject.GetComponentInParent<ScrapperController>();
-        if (!controller) { orig(activator, interactableObject); return; }
+        if (!controller)
+        {
+            orig(activator, interactableObject);
+            return;
+        }
 
         var characterBody = activator.GetComponent<CharacterBody>();
         var networkUser = characterBody ? Util.LookUpBodyNetworkUser(characterBody) : null;
         var scrapCounter = networkUser?.GetComponent<InventoryScrapCounter>();
-        if (!(scrapCounter && scrapCounter.HasItemsToScrap())) { orig(activator, interactableObject); return; }
+        if (!(scrapCounter && scrapCounter.HasItemsToScrap()))
+        {
+            orig(activator, interactableObject);
+            return;
+        }
 
         ItemIndex itemToScrap = scrapCounter.Take();
         Logger.LogDebug($"MarkForScrapPlugin.Interactor_PerformInteraction() | Took {itemToScrap}");
@@ -81,7 +96,9 @@ public class MarkForScrapPlugin : BaseUnityPlugin
 
         if (!self.GetComponent<InventoryScrapCounter>())
         {
-            Logger.LogDebug("MarkForScrapPlugin.NetworkUser_OnEnable() | Adding InventoryScrapCounter");
+            Logger.LogDebug(
+                "MarkForScrapPlugin.NetworkUser_OnEnable() | Adding InventoryScrapCounter"
+            );
             self.gameObject.AddComponent<InventoryScrapCounter>();
         }
     }
@@ -89,7 +106,8 @@ public class MarkForScrapPlugin : BaseUnityPlugin
     private void HUD_Awake(On.RoR2.UI.HUD.orig_Awake orig, RoR2.UI.HUD self)
     {
         orig(self);
-        if (!NetworkClient.active) return;
+        if (!NetworkClient.active)
+            return;
 
         // Logger.LogDebug("MarkForScrapPlugin.HUD_Awake()");
 
@@ -104,15 +122,18 @@ public class MarkForScrapPlugin : BaseUnityPlugin
     private void ItemIcon_Awake(On.RoR2.UI.ItemIcon.orig_Awake orig, RoR2.UI.ItemIcon self)
     {
         orig(self);
-        if (!NetworkClient.active) return;
+        if (!NetworkClient.active)
+            return;
 
         // Logger.LogDebug("MarkForScrapPlugin.ItemIcon_Awake()");
 
-        if (!self.GetComponentInParent<MainInventoryMarker>()) return;
+        if (!self.GetComponentInParent<MainInventoryMarker>())
+            return;
 
         Logger.LogDebug("MarkForScrapPlugin.ItemIcon_Awake() | Got ItemIcon the main inventory");
 
-        if (self.GetComponent<ItemIconScrapSelector>()) return;
+        if (self.GetComponent<ItemIconScrapSelector>())
+            return;
 
         self.gameObject.AddComponent<ItemIconScrapSelector>();
     }
@@ -120,8 +141,10 @@ public class MarkForScrapPlugin : BaseUnityPlugin
     private void InitConfig()
     {
         // Init config
-        ModSettingsManager.SetModDescription("Allows you to pre-select items from your inventory you want to automatically scrap the next time you use a scrapper.");
-        
+        ModSettingsManager.SetModDescription(
+            "Allows you to pre-select items from your inventory you want to automatically scrap the next time you use a scrapper."
+        );
+
         Sprite modIcon = Resources.Assets.Load<Sprite>("Assets/icon.png");
         ModSettingsManager.SetModIcon(modIcon);
 

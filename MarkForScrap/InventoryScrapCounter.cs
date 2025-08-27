@@ -27,7 +27,8 @@ namespace MarkForScrap
             if (isServer)
             {
                 markedForScrap.Clear();
-                for (int i = 0; i < ItemCatalog.itemCount; i++) markedForScrap.Add(false);
+                for (int i = 0; i < ItemCatalog.itemCount; i++)
+                    markedForScrap.Add(false);
             }
 
             // MarkForScrapPlugin.Log.LogDebug($"ScrapCounter.Start() | ItemCatalog count: {ItemCatalog.itemCount}");
@@ -38,22 +39,37 @@ namespace MarkForScrap
             // MarkForScrapPlugin.Log.LogDebug("ScrapCounter.OnCharacterMasterStart()");
 
             var pcmc = master.playerCharacterMasterController;
-            if (pcmc && pcmc.networkUser == networkUser) inventory = pcmc.master.inventory;
+            if (pcmc && pcmc.networkUser == networkUser)
+                inventory = pcmc.master.inventory;
 
             // MarkForScrapPlugin.Log.LogDebug($"ScrapCounter.OnCharacterMasterStart() | Inventory found: {inventory != null}");
 
-            if (inventory && isServer) inventory.onInventoryChanged += SyncScrapCountWithInventory;
+            if (inventory && isServer)
+                inventory.onInventoryChanged += SyncScrapCountWithInventory;
         }
 
-        public void MarkItem(ItemIndex idx) { CmdSetItemMark(idx, true); }
-        public void UnmarkItem(ItemIndex idx) { CmdSetItemMark(idx, false);  }
+        public void MarkItem(ItemIndex idx)
+        {
+            CmdSetItemMark(idx, true);
+        }
+
+        public void UnmarkItem(ItemIndex idx)
+        {
+            CmdSetItemMark(idx, false);
+        }
+
         public void FlipMark(ItemIndex idx)
         {
-            if (IsMarked(idx)) UnmarkItem(idx); else MarkItem(idx);
+            if (IsMarked(idx))
+                UnmarkItem(idx);
+            else
+                MarkItem(idx);
         }
+
         public bool IsMarked(ItemIndex idx)
         {
-            if ((int)idx >= markedForScrap.Count) return false;
+            if ((int)idx >= markedForScrap.Count)
+                return false;
             return markedForScrap[(int)idx];
         }
 
@@ -61,21 +77,28 @@ namespace MarkForScrap
         {
             // MarkForScrapPlugin.Log.LogDebug("ScrapCounter.HasItemsToScrap()");
 
-            for (int i = 0; i < markedForScrap.Count; i++) { if (markedForScrap[i]) return true; }
+            for (int i = 0; i < markedForScrap.Count; i++)
+            {
+                if (markedForScrap[i])
+                    return true;
+            }
             return false;
         }
 
         [Command]
         private void CmdSetItemMark(ItemIndex idx, bool marked)
         {
-            if (!Utils.ItemUtils.IsScrappable(idx)) return;
+            if (!Utils.ItemUtils.IsScrappable(idx))
+                return;
 
             // MarkForScrapPlugin.Log.LogDebug("ScrapCounter.CmdSetItemMark()");
 
             int intIdx = (int)idx;
-            while (intIdx >= markedForScrap.Count) markedForScrap.Add(false);
+            while (intIdx >= markedForScrap.Count)
+                markedForScrap.Add(false);
 
-            if (markedForScrap[intIdx] != marked) markedForScrap[intIdx] = marked;
+            if (markedForScrap[intIdx] != marked)
+                markedForScrap[intIdx] = marked;
 
             MarkForScrapPlugin.Log.LogDebug($"ScrapCounter.CmdSetItemMark() | {idx} : {marked}");
         }
@@ -87,8 +110,10 @@ namespace MarkForScrap
 
             for (int i = 0; i < markedForScrap.Count; ++i)
             {
-                if (!markedForScrap[i]) continue;
-                if (inventory.GetItemCount((ItemIndex)i) == 0) markedForScrap[i] = false;
+                if (!markedForScrap[i])
+                    continue;
+                if (inventory.GetItemCount((ItemIndex)i) == 0)
+                    markedForScrap[i] = false;
             }
         }
 
@@ -97,12 +122,14 @@ namespace MarkForScrap
         {
             MarkForScrapPlugin.Log.LogDebug("ScrapCounter.Take()");
 
-            if (!HasItemsToScrap()) throw new System.Exception("No items marked for scrap");
+            if (!HasItemsToScrap())
+                throw new System.Exception("No items marked for scrap");
 
             int markedItemIdx;
             for (markedItemIdx = 0; markedItemIdx < markedForScrap.Count; markedItemIdx++)
             {
-                if (markedForScrap[markedItemIdx]) break;
+                if (markedForScrap[markedItemIdx])
+                    break;
             }
 
             return (ItemIndex)markedItemIdx;

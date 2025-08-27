@@ -32,18 +32,24 @@ namespace MarkForScrap
 
         public void Update()
         {
-            if (!isHover) return;  // Mouse isn't hovering over
-            if (!Utils.PatchedKeyboardShortcut.IsDown(PluginConfig.ToggleScrapKey.Value)) return; // Scrap key isn't pressed
-            if (!Utils.ItemUtils.IsScrappable(idx)) return;  // Item isn't scrappable
+            if (!isHover)
+                return; // Mouse isn't hovering over
+            if (!Utils.PatchedKeyboardShortcut.IsDown(PluginConfig.ToggleScrapKey.Value))
+                return; // Scrap key isn't pressed
+            if (!Utils.ItemUtils.IsScrappable(idx))
+                return; // Item isn't scrappable
 
             // MarkForScrapPlugin.Log.LogDebug("Scrappable.Update()");
 
             var scrapCounter = Utils.LocalUser.scrapCounter;
-            if (!scrapCounter) return;
+            if (!scrapCounter)
+                return;
 
             scrapCounter.FlipMark(idx);
-            
-            MarkForScrapPlugin.Log.LogDebug($"Scrappable.Update() | Item: {idx}, IsMarked: {scrapCounter.IsMarked(idx)}");
+
+            MarkForScrapPlugin.Log.LogDebug(
+                $"Scrappable.Update() | Item: {idx}, IsMarked: {scrapCounter.IsMarked(idx)}"
+            );
         }
 
         public void LateUpdate()
@@ -56,12 +62,20 @@ namespace MarkForScrap
             imageShadow.enabled = isMarked;
         }
 
-        public void OnPointerEnter(PointerEventData eventData) { isHover = true; }
-        public void OnPointerExit(PointerEventData eventData) { isHover = false; }
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            isHover = true;
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            isHover = false;
+        }
 
         public void EnsureSprite()
         {
-            if (markSprite) return;
+            if (markSprite)
+                return;
             markSprite = Resources.Assets.Load<Sprite>("Assets/icon-scrapper.png");
         }
 
