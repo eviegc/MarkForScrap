@@ -24,10 +24,6 @@ target = "CHANGELOG.md"
 source = "../MarkForScrap/bin/Release/netstandard2.1/Patched/MarkForScrap.dll"
 target = "MarkForScrap.dll"
 
-[[build.copy]]
-source = "../MarkForScrap/bin/Release/netstandard2.1/Patched/MarkForScrap.pdb"
-target = "MarkForScrap.pdb"
-
 [general]
 repository = "https://thunderstore.io"
 
