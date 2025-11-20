@@ -112,7 +112,8 @@ namespace MarkForScrap
             {
                 if (!markedForScrap[i])
                     continue;
-                if (inventory.GetItemCount((ItemIndex)i) == 0)
+
+                if (inventory.GetItemCountEffective((ItemIndex)i) == 0)
                     markedForScrap[i] = false;
             }
         }

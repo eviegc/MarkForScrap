@@ -7,7 +7,7 @@
   <PropertyGroup>
     <BepInExPluginName>MarkForScrap</BepInExPluginName>
     <BepInExPluginGuid>com.eviegc.MarkForScrap</BepInExPluginGuid>
-    <BepInExPluginVersion>1.0.1</BepInExPluginVersion>
+    <BepInExPluginVersion>1.1.0</BepInExPluginVersion>
   </PropertyGroup>
   <!-- User-dependent config/paths required for build steps. You should edit these to point to the relevent paths on your machine. -->
   <PropertyGroup>
@@ -26,8 +26,8 @@
     <PackageReference Include="BepInEx.Core" Version="5.4.*" />
     <PackageReference Include="BepInEx.PluginInfoProps" Version="2.1.0" />
     <PackageReference Include="UnityEngine.Modules" Version="2021.3.33" IncludeAssets="compile" />
-    <PackageReference Include="RiskOfRain2.GameLibs" Version="1.3.9-r.0" />
-    <PackageReference Include="MMHOOK.RoR2" Version="2025.6.3" NoWarn="NU1701" />
+    <PackageReference Include="RiskOfRain2.GameLibs" Version="1.4.0-r.0" />
+    <PackageReference Include="MMHOOK.RoR2" Version="2025.11.19" NoWarn="NU1701" />
     <PackageReference Include="Rune580.Mods.RiskOfRain2.RiskOfOptions" Version="2.8.3" />
   </ItemGroup>
   <ItemGroup>
