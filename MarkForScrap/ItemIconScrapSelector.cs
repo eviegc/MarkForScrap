@@ -23,8 +23,6 @@ namespace MarkForScrap
 
         public void Awake()
         {
-            // MarkForScrapPlugin.Log.LogDebug("Scrappable.Awake()");
-
             icon = GetComponent<ItemIcon>();
 
             InitUI();
@@ -39,23 +37,20 @@ namespace MarkForScrap
             if (!Utils.ItemUtils.IsScrappable(idx))
                 return; // Item isn't scrappable
 
-            // MarkForScrapPlugin.Log.LogDebug("Scrappable.Update()");
-
             var scrapCounter = Utils.LocalUser.scrapCounter;
             if (!scrapCounter)
                 return;
 
             scrapCounter.FlipMark(idx);
 
-            MarkForScrapPlugin.Log.LogDebug(
-                $"Scrappable.Update() | Item: {idx}, IsMarked: {scrapCounter.IsMarked(idx)}"
-            );
+            if (PluginConfig.DebugLogs.Value)
+                MarkForScrapPlugin.Log.LogDebug(
+                    $"Scrappable.Update() | Item: {idx}, IsMarked: {scrapCounter.IsMarked(idx)}"
+                );
         }
 
         public void LateUpdate()
         {
-            // MarkForScrapPlugin.Log.LogDebug("Scrappable.LateUpdate()");
-
             var scrapCounter = Utils.LocalUser.scrapCounter;
             bool isMarked = scrapCounter ? scrapCounter.IsMarked(idx) : false;
             image.enabled = isMarked;
@@ -81,8 +76,6 @@ namespace MarkForScrap
 
         public void InitUI()
         {
-            // MarkForScrapPlugin.Log.LogDebug("Scrappable.InitUI()");
-
             EnsureSprite();
 
             GameObject overlay = new GameObject("ScrapOverlay");

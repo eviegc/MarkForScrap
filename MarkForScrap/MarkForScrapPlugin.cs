@@ -21,7 +21,8 @@ public class MarkForScrapPlugin : BaseUnityPlugin
 
     public void Awake()
     {
-        // Logger.LogDebug("MarkForScrapPlugin.Awake()");
+        if (PluginConfig.DebugLogs.Value)
+            Logger.LogDebug("MarkForScrapPlugin.Awake()");
 
         Log = Logger;
         Resources.Assets.LoadAssets();
@@ -43,7 +44,8 @@ public class MarkForScrapPlugin : BaseUnityPlugin
 
     public void OnDestroy()
     {
-        // Logger.LogDebug("MarkForScrapPlugin.OnDestroy()");
+        if (PluginConfig.DebugLogs.Value)
+            Logger.LogDebug("MarkForScrapPlugin.OnDestroy()");
 
         On.RoR2.UI.HUD.Awake -= HUD_Awake;
         On.RoR2.UI.ItemIcon.Awake -= ItemIcon_Awake;
@@ -62,7 +64,9 @@ public class MarkForScrapPlugin : BaseUnityPlugin
             orig(activator, interactableObject);
             return;
         }
-        // Logger.LogDebug("MarkForScrapPlugin.Interactor_PerformInteraction()");
+
+        if (PluginConfig.DebugLogs.Value)
+            Logger.LogDebug("MarkForScrapPlugin.Interactor_PerformInteraction()");
 
         var controller = interactableObject.GetComponentInParent<ScrapperController>();
         if (!controller)
@@ -81,7 +85,10 @@ public class MarkForScrapPlugin : BaseUnityPlugin
         }
 
         ItemIndex itemToScrap = scrapCounter.Take();
-        Logger.LogDebug($"MarkForScrapPlugin.Interactor_PerformInteraction() | Took {itemToScrap}");
+        if (PluginConfig.DebugLogs.Value)
+            Logger.LogDebug(
+                $"MarkForScrapPlugin.Interactor_PerformInteraction() | Took {itemToScrap}"
+            );
 
         var pickup = PickupCatalog.FindPickupIndex(itemToScrap);
         controller.AssignPotentialInteractor(activator);
@@ -92,13 +99,15 @@ public class MarkForScrapPlugin : BaseUnityPlugin
     {
         orig(self);
 
-        // Logger.LogDebug("MarkForScrapPlugin.NetworkUser_OnEnable()");
+        if (PluginConfig.DebugLogs.Value)
+            Logger.LogDebug("MarkForScrapPlugin.NetworkUser_OnEnable()");
 
         if (!self.GetComponent<InventoryScrapCounter>())
         {
-            Logger.LogDebug(
-                "MarkForScrapPlugin.NetworkUser_OnEnable() | Adding InventoryScrapCounter"
-            );
+            if (PluginConfig.DebugLogs.Value)
+                Logger.LogDebug(
+                    "MarkForScrapPlugin.NetworkUser_OnEnable() | Adding InventoryScrapCounter"
+                );
             self.gameObject.AddComponent<InventoryScrapCounter>();
         }
     }
@@ -109,7 +118,8 @@ public class MarkForScrapPlugin : BaseUnityPlugin
         if (!NetworkClient.active)
             return;
 
-        // Logger.LogDebug("MarkForScrapPlugin.HUD_Awake()");
+        if (PluginConfig.DebugLogs.Value)
+            Logger.LogDebug("MarkForScrapPlugin.HUD_Awake()");
 
         var invDisplay = self.itemInventoryDisplay;
 
@@ -125,12 +135,16 @@ public class MarkForScrapPlugin : BaseUnityPlugin
         if (!NetworkClient.active)
             return;
 
-        // Logger.LogDebug("MarkForScrapPlugin.ItemIcon_Awake()");
+        if (PluginConfig.DebugLogs.Value)
+            Logger.LogDebug("MarkForScrapPlugin.ItemIcon_Awake()");
 
         if (!self.GetComponentInParent<MainInventoryMarker>())
             return;
 
-        Logger.LogDebug("MarkForScrapPlugin.ItemIcon_Awake() | Got ItemIcon the main inventory");
+        if (PluginConfig.DebugLogs.Value)
+            Logger.LogDebug(
+                "MarkForScrapPlugin.ItemIcon_Awake() | Got ItemIcon the main inventory"
+            );
 
         if (self.GetComponent<ItemIconScrapSelector>())
             return;
@@ -155,6 +169,14 @@ public class MarkForScrapPlugin : BaseUnityPlugin
             "When mouse hovering over an item in the top bar, pressing this key will (un)mark it for scrapping."
         );
         ModSettingsManager.AddOption(new KeyBindOption(PluginConfig.ToggleScrapKey));
+
+        PluginConfig.DebugLogs = Config.Bind(
+            "Debug",
+            "Print debug logs to console",
+            false,
+            "When true, logs will be printed to the console"
+        );
+        ModSettingsManager.AddOption(new CheckBoxOption(PluginConfig.DebugLogs));
     }
 
     // Used only so we can find the top-bar inventory later on
