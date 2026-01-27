@@ -7,7 +7,7 @@
   <PropertyGroup>
     <BepInExPluginName>MarkForScrap</BepInExPluginName>
     <BepInExPluginGuid>com.eviegc.MarkForScrap</BepInExPluginGuid>
-    <BepInExPluginVersion>1.1.0</BepInExPluginVersion>
+    <BepInExPluginVersion>1.1.1</BepInExPluginVersion>
   </PropertyGroup>
   <!-- User-dependent config/paths required for build steps. You should edit these to point to the relevent paths on your machine. -->
   <PropertyGroup>

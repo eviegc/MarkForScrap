@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.1.1
+
+* Bug fixes for temporary items and Quality mod items
+
 ## 1.1.0
 
 * Update to support the Alloyed Collective DLC
