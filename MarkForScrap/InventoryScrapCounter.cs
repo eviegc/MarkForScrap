@@ -5,17 +5,19 @@ using UnityEngine.Networking;
 namespace MarkForScrap
 {
     [DisallowMultipleComponent]
-    [RequireComponent(typeof(NetworkUser))]
     public class InventoryScrapCounter : NetworkBehaviour
     {
-        private NetworkUser networkUser;
         private Inventory inventory;
         private readonly SyncListBool markedForScrap = new SyncListBool();
 
         public void Awake()
         {
-            networkUser = GetComponent<NetworkUser>();
             CharacterMaster.onStartGlobal += OnCharacterMasterStart;
+        }
+
+        public void OnDestroy()
+        {
+            CharacterMaster.onStartGlobal -= OnCharacterMasterStart;
         }
 
         // We want to do this in OnStartServer() but because of our setup that doesn't
@@ -31,36 +33,38 @@ namespace MarkForScrap
             }
 
             if (PluginConfig.DebugLogs.Value)
-                MarkForScrapPlugin.Log.LogDebug(
-                    $"ScrapCounter.Start() | ItemCatalog count: {ItemCatalog.itemCount}"
-                );
+                MarkForScrapPlugin.Log.LogDebug($"Found {ItemCatalog.itemCount} total items");
         }
 
         public void OnCharacterMasterStart(CharacterMaster master)
         {
-            if (PluginConfig.DebugLogs.Value)
-                MarkForScrapPlugin.Log.LogDebug("ScrapCounter.OnCharacterMasterStart()");
+            if (!isServer)
+                return;
 
             var pcmc = master.playerCharacterMasterController;
-            if (pcmc && pcmc.networkUser == networkUser)
-                inventory = pcmc.master.inventory;
+            if (pcmc == null || pcmc.networkUser == null || master.inventory == null)
+                return;
+
+            inventory = master.inventory;
+            inventory.onInventoryChanged += SyncScrapCountWithInventory;
 
             if (PluginConfig.DebugLogs.Value)
                 MarkForScrapPlugin.Log.LogDebug(
-                    $"ScrapCounter.OnCharacterMasterStart() | Inventory found: {inventory != null}"
+                    "Added SyncScrapCountWithInventory hook to player inventory"
                 );
-
-            if (inventory && isServer)
-                inventory.onInventoryChanged += SyncScrapCountWithInventory;
         }
 
         public void MarkItem(ItemIndex idx)
         {
+            if (PluginConfig.DebugLogs.Value)
+                MarkForScrapPlugin.Log.LogDebug($"Marking ItemIndex {idx} for scrap");
             CmdSetItemMark(idx, true);
         }
 
         public void UnmarkItem(ItemIndex idx)
         {
+            if (PluginConfig.DebugLogs.Value)
+                MarkForScrapPlugin.Log.LogDebug($"Unmarking ItemIndex {idx} for scrap");
             CmdSetItemMark(idx, false);
         }
 
@@ -81,25 +85,26 @@ namespace MarkForScrap
 
         public bool HasItemsToScrap()
         {
-            if (PluginConfig.DebugLogs.Value)
-                MarkForScrapPlugin.Log.LogDebug("ScrapCounter.HasItemsToScrap()");
-
             for (int i = 0; i < markedForScrap.Count; i++)
             {
                 if (markedForScrap[i])
+                {
+                    if (PluginConfig.DebugLogs.Value)
+                        MarkForScrapPlugin.Log.LogDebug("We have marked items to scrap");
                     return true;
+                }
             }
+
+            if (PluginConfig.DebugLogs.Value)
+                MarkForScrapPlugin.Log.LogDebug("There are no marked items to scrap");
             return false;
         }
 
         [Command]
         private void CmdSetItemMark(ItemIndex idx, bool marked)
         {
-            if (!Utils.ItemUtils.IsScrappable(idx))
+            if (!Utils.ItemUtils.IsScrappable(idx) || inventory.GetItemCountPermanent(idx) <= 0)
                 return;
-
-            if (PluginConfig.DebugLogs.Value)
-                MarkForScrapPlugin.Log.LogDebug("ScrapCounter.CmdSetItemMark()");
 
             int intIdx = (int)idx;
             while (intIdx >= markedForScrap.Count)
@@ -109,23 +114,19 @@ namespace MarkForScrap
                 markedForScrap[intIdx] = marked;
 
             if (PluginConfig.DebugLogs.Value)
-                MarkForScrapPlugin.Log.LogDebug(
-                    $"ScrapCounter.CmdSetItemMark() | {idx} : {marked}"
-                );
+                MarkForScrapPlugin.Log.LogDebug($"ItemIndex {idx} has been set to marked={marked}");
         }
 
         [Server]
         private void SyncScrapCountWithInventory()
         {
-            if (PluginConfig.DebugLogs.Value)
-                MarkForScrapPlugin.Log.LogDebug("ScrapCounter.SyncScrapCountWithInventory()");
-
+            // TODO I just don't like it
             for (int i = 0; i < markedForScrap.Count; ++i)
             {
                 if (!markedForScrap[i])
                     continue;
 
-                if (inventory.GetItemCountEffective((ItemIndex)i) == 0)
+                if (inventory.GetItemCountPermanent((ItemIndex)i) <= 0)
                     markedForScrap[i] = false;
             }
         }
@@ -133,9 +134,6 @@ namespace MarkForScrap
         [Server]
         public ItemIndex Take()
         {
-            if (PluginConfig.DebugLogs.Value)
-                MarkForScrapPlugin.Log.LogDebug("ScrapCounter.Take()");
-
             if (!HasItemsToScrap())
                 throw new System.Exception("No items marked for scrap");
 
@@ -146,6 +144,7 @@ namespace MarkForScrap
                     break;
             }
 
+            UnmarkItem((ItemIndex)markedItemIdx);
             return (ItemIndex)markedItemIdx;
         }
     }

@@ -35,18 +35,17 @@ namespace MarkForScrap
             if (!Utils.PatchedKeyboardShortcut.IsDown(PluginConfig.ToggleScrapKey.Value))
                 return; // Scrap key isn't pressed
             if (!Utils.ItemUtils.IsScrappable(idx))
+            {
+                if (PluginConfig.DebugLogs.Value)
+                    MarkForScrapPlugin.Log.LogDebug($"ItemIndex {idx} isn't scrappable");
                 return; // Item isn't scrappable
+            }
 
             var scrapCounter = Utils.LocalUser.scrapCounter;
             if (!scrapCounter)
                 return;
 
             scrapCounter.FlipMark(idx);
-
-            if (PluginConfig.DebugLogs.Value)
-                MarkForScrapPlugin.Log.LogDebug(
-                    $"Scrappable.Update() | Item: {idx}, IsMarked: {scrapCounter.IsMarked(idx)}"
-                );
         }
 
         public void LateUpdate()

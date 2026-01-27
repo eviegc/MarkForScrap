@@ -21,9 +21,6 @@ public class MarkForScrapPlugin : BaseUnityPlugin
 
     public void Awake()
     {
-        if (PluginConfig.DebugLogs.Value)
-            Logger.LogDebug("MarkForScrapPlugin.Awake()");
-
         Log = Logger;
         Resources.Assets.LoadAssets();
         InitConfig();
@@ -44,9 +41,6 @@ public class MarkForScrapPlugin : BaseUnityPlugin
 
     public void OnDestroy()
     {
-        if (PluginConfig.DebugLogs.Value)
-            Logger.LogDebug("MarkForScrapPlugin.OnDestroy()");
-
         On.RoR2.UI.HUD.Awake -= HUD_Awake;
         On.RoR2.UI.ItemIcon.Awake -= ItemIcon_Awake;
         On.RoR2.NetworkUser.OnEnable -= NetworkUser_OnEnable;
@@ -64,9 +58,6 @@ public class MarkForScrapPlugin : BaseUnityPlugin
             orig(activator, interactableObject);
             return;
         }
-
-        if (PluginConfig.DebugLogs.Value)
-            Logger.LogDebug("MarkForScrapPlugin.Interactor_PerformInteraction()");
 
         var controller = interactableObject.GetComponentInParent<ScrapperController>();
         if (!controller)
@@ -86,11 +77,19 @@ public class MarkForScrapPlugin : BaseUnityPlugin
 
         ItemIndex itemToScrap = scrapCounter.Take();
         if (PluginConfig.DebugLogs.Value)
-            Logger.LogDebug(
-                $"MarkForScrapPlugin.Interactor_PerformInteraction() | Took {itemToScrap}"
-            );
+            Logger.LogDebug($"Taking ItemIndex {itemToScrap} for scrap");
 
-        var pickup = PickupCatalog.FindPickupIndex(itemToScrap);
+        if (characterBody.inventory.GetItemCountPermanent(itemToScrap) <= 0)
+        {
+            if (PluginConfig.DebugLogs.Value)
+                Logger.LogDebug(
+                    $"Tried to take ItemIndex {itemToScrap} for scrap, but we dont have it anymore. Spooky!"
+                );
+            orig(activator, interactableObject);
+            return;
+        }
+
+        PickupIndex pickup = PickupCatalog.FindPickupIndex(itemToScrap);
         controller.AssignPotentialInteractor(activator);
         controller.BeginScrapping(pickup.value);
     }
@@ -98,16 +97,10 @@ public class MarkForScrapPlugin : BaseUnityPlugin
     private void NetworkUser_OnEnable(On.RoR2.NetworkUser.orig_OnEnable orig, NetworkUser self)
     {
         orig(self);
-
-        if (PluginConfig.DebugLogs.Value)
-            Logger.LogDebug("MarkForScrapPlugin.NetworkUser_OnEnable()");
-
         if (!self.GetComponent<InventoryScrapCounter>())
         {
             if (PluginConfig.DebugLogs.Value)
-                Logger.LogDebug(
-                    "MarkForScrapPlugin.NetworkUser_OnEnable() | Adding InventoryScrapCounter"
-                );
+                Logger.LogDebug("Adding InventoryScrapCounter component to NetworkUser");
             self.gameObject.AddComponent<InventoryScrapCounter>();
         }
     }
@@ -118,15 +111,9 @@ public class MarkForScrapPlugin : BaseUnityPlugin
         if (!NetworkClient.active)
             return;
 
-        if (PluginConfig.DebugLogs.Value)
-            Logger.LogDebug("MarkForScrapPlugin.HUD_Awake()");
-
         var invDisplay = self.itemInventoryDisplay;
-
         if (!invDisplay.gameObject.GetComponent<MainInventoryMarker>())
-        {
             invDisplay.gameObject.AddComponent<MainInventoryMarker>();
-        }
     }
 
     private void ItemIcon_Awake(On.RoR2.UI.ItemIcon.orig_Awake orig, RoR2.UI.ItemIcon self)
@@ -134,22 +121,19 @@ public class MarkForScrapPlugin : BaseUnityPlugin
         orig(self);
         if (!NetworkClient.active)
             return;
-
-        if (PluginConfig.DebugLogs.Value)
-            Logger.LogDebug("MarkForScrapPlugin.ItemIcon_Awake()");
-
         if (!self.GetComponentInParent<MainInventoryMarker>())
             return;
 
         if (PluginConfig.DebugLogs.Value)
-            Logger.LogDebug(
-                "MarkForScrapPlugin.ItemIcon_Awake() | Got ItemIcon the main inventory"
-            );
+            Logger.LogDebug("An ItemIcon in the main inventory just woke up");
 
         if (self.GetComponent<ItemIconScrapSelector>())
             return;
 
         self.gameObject.AddComponent<ItemIconScrapSelector>();
+
+        if (PluginConfig.DebugLogs.Value)
+            Logger.LogDebug("Added ItemIconScrapSelector component an ItemIcon");
     }
 
     private void InitConfig()
