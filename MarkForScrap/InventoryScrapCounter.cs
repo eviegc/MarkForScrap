@@ -5,13 +5,16 @@ using UnityEngine.Networking;
 namespace MarkForScrap
 {
     [DisallowMultipleComponent]
+    [RequireComponent(typeof(NetworkUser))]
     public class InventoryScrapCounter : NetworkBehaviour
     {
+        private NetworkUser networkUser;
         private Inventory inventory;
         private readonly SyncListBool markedForScrap = new SyncListBool();
 
         public void Awake()
         {
+            networkUser = GetComponent<NetworkUser>();
             CharacterMaster.onStartGlobal += OnCharacterMasterStart;
         }
 
@@ -38,20 +41,24 @@ namespace MarkForScrap
 
         public void OnCharacterMasterStart(CharacterMaster master)
         {
-            if (!isServer)
-                return;
+            PlayerCharacterMasterController pcmc = master.playerCharacterMasterController;
+            if (pcmc && pcmc.networkUser == networkUser)
+            {
+                inventory = pcmc.master.inventory;
 
-            var pcmc = master.playerCharacterMasterController;
-            if (pcmc == null || pcmc.networkUser == null || master.inventory == null)
-                return;
+                if (PluginConfig.DebugLogs.Value)
+                    MarkForScrapPlugin.Log.LogDebug("Found player inventory");
 
-            inventory = master.inventory;
-            inventory.onInventoryChanged += SyncScrapCountWithInventory;
+                if (isServer)
+                {
+                    inventory.onInventoryChanged += SyncScrapCountWithInventory;
 
-            if (PluginConfig.DebugLogs.Value)
-                MarkForScrapPlugin.Log.LogDebug(
-                    "Added SyncScrapCountWithInventory hook to player inventory"
-                );
+                    if (PluginConfig.DebugLogs.Value)
+                        MarkForScrapPlugin.Log.LogDebug(
+                            "Added SyncScrapCountWithInventory hook to player inventory"
+                        );
+                }
+            }
         }
 
         public void MarkItem(ItemIndex idx)

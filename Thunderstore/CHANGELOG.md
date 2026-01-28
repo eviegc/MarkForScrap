@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.1.2
+
+* Bug fixes for the aforementioned bug fixes
+
 ## 1.1.1
 
 * Bug fixes for temporary items and Quality mod items
