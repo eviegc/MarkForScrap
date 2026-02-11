@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.1.3
+
+* Add HookGenPatcher and Risk_Of_Options as dependencies
+
 ## 1.1.2
 
 * Bug fixes for the aforementioned bug fixes

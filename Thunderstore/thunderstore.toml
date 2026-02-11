@@ -10,6 +10,8 @@ containsNsfwContent = false
 
 [package.dependencies]
 bbepis-BepInExPack = "5.4.2121"
+RiskofThunder-HookGenPatcher = "1.2.9"
+Rune580-Risk_Of_Options = "2.8.5"
 
 [build]
 icon = "icon.png"
@@ -31,4 +33,4 @@ repository = "https://thunderstore.io"
 communities = [ "riskofrain2" ]
 
 [publish.categories]
-riskofrain2 = [ "mods" ]
+riskofrain2 = [ "mods", "tweaks", "server-side", "client-side" ]
